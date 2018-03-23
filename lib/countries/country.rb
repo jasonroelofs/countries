@@ -90,6 +90,18 @@ module ISO3166
     end
 
     def translation(locale = 'en')
+      if defined?(Rails)
+        if data.nil?
+          Rails.logger.warn("[COUNTRIES] Data is nil for #{name}")
+          return nil
+        end
+
+        if data['translations'].nil?
+          Rails.logger.warn("[COUNTRIES] Data translations is nil for #{name}")
+          return nil
+        end
+      end
+
       data['translations'][locale.to_s.downcase]
     end
 
