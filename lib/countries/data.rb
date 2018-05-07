@@ -116,6 +116,9 @@ module ISO3166
 
       def load_translations(locale)
         locale_names = load_cache(['locales', "#{locale}.json"])
+        if defined?(Rails)
+          Rails.logger.warn("[COUNTRIES] Loading translations for #{locale} in #{internal_codes} (#{locale_names})")
+        end
         internal_codes.each do |alpha2|
           @@cache[alpha2]['translations'] ||= Translations.new
           @@cache[alpha2]['translations'][locale] = locale_names[alpha2].freeze
@@ -125,6 +128,9 @@ module ISO3166
       end
 
       def unload_translations(locale)
+        if defined?(Rails)
+          Rails.logger.warn("[COUNTRIES] Deleting translations for #{locale} in #{internal_codes}")
+        end
         internal_codes.each do |alpha2|
           @@cache[alpha2]['translations'].delete(locale)
           @@cache[alpha2]['translated_names'] = @@cache[alpha2]['translations'].values.freeze
