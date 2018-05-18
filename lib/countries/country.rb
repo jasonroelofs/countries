@@ -92,12 +92,13 @@ module ISO3166
     def translation(locale = 'en')
       if defined?(Rails)
         if data.nil?
-          Rails.logger.warn("[COUNTRIES] Data is nil for #{name}")
+          Rails.logger.warn("[COUNTRIES] Data is nil for #{name} (#{locale})")
           return nil
         end
 
         if data['translations'].nil?
-          Rails.logger.warn("[COUNTRIES] Data translations is nil for #{name}")
+          # this fired.
+          Rails.logger.warn("[COUNTRIES] Data translations is nil for #{name} (#{locale})")
           return nil
         end
       end
@@ -123,6 +124,18 @@ module ISO3166
               else
                 ISO3166::Data.new(@country_data_or_code).call
               end
+
+      if defined?(Rails)
+        if @data["translations"].nil?
+          Rails.logger.warn("[COUNTRIES] I, #{self}, got reloaded and my translations are nil")
+          Rails.logger.warn("[COUNTRIES] @country_data_or_code is a #{@country_data_or_code.class}")
+          Rails.logger.warn("[COUNTRIES] @data is a #{@data.class}")
+          Rails.logger.warn("[COUNTRIES] Here is the caller stack trace of #relaod")
+          caller.each do |line|
+            Rails.logger.warn("[COUNTRIES] #{line}")
+          end
+        end
+      end
     end
   end
 end
